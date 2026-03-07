@@ -10,6 +10,23 @@ const __dirname = dirname(__filename);
 const upload = multer({ dest: 'uploads/' });
 const app = express();
 const PORT = process.env.PORT || 3030;
+const demoFilesRoot = path.join(__dirname, 'demo-files');
+const demoFileTree = {
+	SENSORSDATA: {
+		'1970': {
+			'JAN.csv': 'file',
+		},
+		'2019': {
+			'NOV.csv': 'file',
+		},
+		'2026': {
+			'JAN.csv': 'file',
+			'FEB.csv': 'file',
+			'MAR.csv': 'file',
+		},
+		'failed_send_payloads.txt': 'file',
+	},
+};
 console.log('Starting demo server...');
 console.log(`Serving static files from: ${join(__dirname, '../dist')}`);
 
@@ -26,14 +43,38 @@ app.get('/device-id', (_req, res) => {
 
 // GET /list-files
 app.get('/list-files', (_req, res) => {
-	res.json({
-		'config.json': 'file',
-		'logs': {
-			'2025-01-01.csv': 'file',
-			'archive': {
-				'old.log': 'file',
-			},
-		},
+	res.json(demoFileTree);
+});
+
+// GET /download?file=/SENSORSDATA/2026/MAR.csv
+app.get('/download', (req, res) => {
+	const requestedFile = req.query.file;
+	if (typeof requestedFile !== 'string' || requestedFile.length === 0) {
+		return res.status(400).json({ error: 'Missing file query parameter' });
+	}
+
+	const normalized = path.posix.normalize(requestedFile);
+	const relativePath = normalized.replace(/^\/+/, '');
+	if (!relativePath || relativePath.includes('..')) {
+		return res.status(400).json({ error: 'Invalid file path' });
+	}
+
+	const absolutePath = path.resolve(demoFilesRoot, relativePath);
+	const rootWithSep = demoFilesRoot.endsWith(path.sep)
+		? demoFilesRoot
+		: `${demoFilesRoot}${path.sep}`;
+	if (!absolutePath.startsWith(rootWithSep)) {
+		return res.status(400).json({ error: 'Invalid file path' });
+	}
+
+	return res.download(absolutePath, path.basename(absolutePath), (err) => {
+		if (err && !res.headersSent) {
+			if (err.code === 'ENOENT') {
+				res.status(404).json({ error: 'File not found' });
+				return;
+			}
+			res.status(500).json({ error: 'Download failed' });
+		}
 	});
 });
 
