@@ -9,7 +9,7 @@ const fsp = fs.promises;
 // distDir: output folder, srcDir: root of source files
 // htmlFiles: array of html/js paths used for PurgeCSS content scanning
 async function minifyCss(distDir, srcDir, htmlFiles = []) {
-// locate source stylesheet
+	// locate source stylesheet
 	const cssEntryPath = path.resolve(srcDir, 'css', 'style.css');
 
 	logger.debug(`Checking path: ${cssEntryPath}`);
@@ -27,9 +27,15 @@ async function minifyCss(distDir, srcDir, htmlFiles = []) {
 		content: htmlFiles,
 		css: [{ raw: rawCss }],
 	});
+	// if purge returned nothing, log a warning and fall back to original
+	if (!purgeResult || purgeResult.length === 0) {
+		logger.warn('PurgeCSS did not return any results; using original CSS.');
+	}
 	const purgedCss = purgeResult[0]?.css ?? rawCss;
 
-	logger.info(`Purged size: ${Buffer.byteLength(purgedCss)} bytes`);
+	const purgedSize = Buffer.byteLength(purgedCss);
+	logger.info(`Purged size: ${purgedSize} bytes`);
+
 	logger.info(`Minifying CSS: ${path.basename(cssEntryPath)}`);
 	const minified = minify(purgedCss).css;
 
@@ -38,10 +44,20 @@ async function minifyCss(distDir, srcDir, htmlFiles = []) {
 	await fsp.writeFile(minifiedPath, minified, 'utf-8');
 
 	const afterSize = Buffer.byteLength(minified);
-
+	const diffColor = afterSize < beforeSize ? 'green' : 'red';
 	logger.info(
-		`Created bundle: styles.min.css (${beforeSize} → ${afterSize} bytes)`,
+		`Created bundle: styles.min.css (` +
+		logger.colorize(`${beforeSize}→${afterSize}`, diffColor) +
+		` bytes)`,
 	);
+
+	// debug output for deeper inspection
+	logger.debug({
+		input: cssEntryPath,
+		output: minifiedPath,
+		before: beforeSize,
+		after: afterSize,
+	});
 
 	return { paths: [minifiedPath], before: beforeSize, after: afterSize };
 }
