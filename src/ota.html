@@ -11,26 +11,40 @@
 		<div id="layout-header"></div>
 
 		<main class="container">
-			<section class="ota-page">
+			<section class="ota-page card">
 				<h1 class="page-title">Firmware Update</h1>
 				<article class="sensor-group">
 					<form id="ota_form" class="ota-form">
 						<div class="form-group">
-							<label for="firmware_input">Choose firmware (.bin, max 2MB)</label>
-							<input type="file" id="firmware_input" accept=".bin" required />
+							<label for="firmware_input"
+								>Choose firmware (.bin, max 2MB)</label
+							>
+							<input
+								type="file"
+								id="firmware_input"
+								accept=".bin"
+								required />
 						</div>
-						<button type="submit" class="btn btn--primary">Start Upgrade</button>
+						<button type="submit" class="btn btn--primary">
+							Start Upgrade
+						</button>
 					</form>
 
 					<!-- Progress UI -->
-					<div id="progress_wrapper" class="hidden" style="width: 100%; margin-top: 1.5rem;">
+					<div id="progress_wrapper" class="progress-wrapper hidden">
 						<div class="sensor-data__row">
 							<span class="sensor-data__label">Status:</span>
-							<span class="sensor-data__value" id="upload_status">Ready</span>
+							<span class="sensor-data__value" id="upload_status"
+								>Ready</span
+							>
 						</div>
 						<div class="sensor-data__row">
 							<span class="sensor-data__label">Progress:</span>
-							<span class="sensor-data__value" id="upload_progress">0%</span>
+							<span
+								class="sensor-data__value"
+								id="upload_progress"
+								>0%</span
+							>
 						</div>
 					</div>
 				</article>
