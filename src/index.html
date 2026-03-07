@@ -11,11 +11,8 @@
 		<div id="layout-header"></div>
 
 		<main class="container">
-			<section class="sensor-overview-page">
+			<section class="sensor-overview-page card">
 				<h1 class="page-title">Sensor Data Overview</h1>
-
-				<!-- Added Device ID display if you want it -->
-				<p class="text-sm">Device ID: <span id="device-id">Loading...</span></p>
 
 				<div class="sensor-overview__groups">
 					<article class="sensor-group">
@@ -23,15 +20,21 @@
 						<div class="sensor-group__data">
 							<div class="sensor-data__row">
 								<span class="sensor-data__label">PM1</span>
-								<span class="sensor-data__value" id="PM1_DATA">Unavailable</span>
+								<span class="sensor-data__value" id="PM1_DATA"
+									>Unavailable</span
+								>
 							</div>
 							<div class="sensor-data__row">
 								<span class="sensor-data__label">PM2.5</span>
-								<span class="sensor-data__value" id="PM25_DATA">Unavailable</span>
+								<span class="sensor-data__value" id="PM25_DATA"
+									>Unavailable</span
+								>
 							</div>
 							<div class="sensor-data__row">
 								<span class="sensor-data__label">PM10</span>
-								<span class="sensor-data__value" id="PM10_DATA">Unavailable</span>
+								<span class="sensor-data__value" id="PM10_DATA"
+									>Unavailable</span
+								>
 							</div>
 						</div>
 					</article>
@@ -40,12 +43,22 @@
 						<h2 class="sensor-group__title">Environment</h2>
 						<div class="sensor-group__data">
 							<div class="sensor-data__row">
-								<span class="sensor-data__label">Temperature:</span>
-								<span class="sensor-data__value" id="temperature">Unavailable</span>
+								<span class="sensor-data__label"
+									>Temperature:</span
+								>
+								<span
+									class="sensor-data__value"
+									id="temperature"
+									>Unavailable</span
+								>
 							</div>
 							<div class="sensor-data__row">
-								<span class="sensor-data__label">Humidity:</span>
-								<span class="sensor-data__value" id="humidity">Unavailable</span>
+								<span class="sensor-data__label"
+									>Humidity:</span
+								>
+								<span class="sensor-data__value" id="humidity"
+									>Unavailable</span
+								>
 							</div>
 						</div>
 					</article>
