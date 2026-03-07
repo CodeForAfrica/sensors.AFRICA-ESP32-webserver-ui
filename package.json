@@ -20,6 +20,11 @@
     "terser": "^5.46.0"
   },
   "description": "Web server user interface development for ESP32 boards.",
+  "devDependencies": {
+    "cssnano": "^7.1.2",
+    "postcss": "^8.5.8",
+    "postcss-cli": "^11.0.1"
+  },
   "homepage": "https://github.com/CodeForAfrica/sensors.AFRICA-ESP32-webserver-ui#readme",
   "keywords": [
     "ESP32"
@@ -35,20 +40,12 @@
     "build": "node build.js",
     "build:debug": "LOG_LEVEL=debug npm run build",
     "clean:svgs": "svgcleaner src dist || echo 'svgcleaner not found'",
-    "dev": "nodemon --watch server/index.js --exec 'node server/index.js'",
+    "dev": "npm run build:debug && npm run watch",
     "optimize:svgs": "npx svgo -f src/icons -o dist/icons",
-    "start": "node server.js",
+    "start": "node server/index.js",
     "test": "jest",
-    "watch": "nodemon --exec 'npm run build'"
+    "watch": "nodemon --watch src --ext js,css,html --exec \"npm run build:debug && npm run start\""
   },
   "type": "module",
-  "version": "1.0.0",
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4.2.1",
-    "autoprefixer": "^10.4.27",
-    "cssnano": "^7.1.2",
-    "postcss": "^8.5.8",
-    "postcss-cli": "^11.0.1",
-    "tailwindcss": "^4.2.1"
-  }
+  "version": "1.0.0"
 }
