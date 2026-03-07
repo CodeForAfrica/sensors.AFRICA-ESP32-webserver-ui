@@ -6,9 +6,12 @@ const fsp = fs.promises;
 
 async function minifyJs(htmlFiles, distDir, srcDir) {
 	const jsFiles = new Set();
+	const jsFilesDebug = [];
 	for (const htmlFile of htmlFiles) {
 		const content = await fsp.readFile(htmlFile, 'utf-8');
-		const regex = /<script\s+src=["']([^"']+)["']\s*><\/script>/g;
+		// match any <script> tag that has a src attribute, regardless of attribute order or other attributes
+		const regex =
+			/<script\b[^>]*\bsrc=["']([^"'>\s]+)["'][^>]*><\/script>/gi;
 		let match;
 		while ((match = regex.exec(content)) !== null) {
 			jsFiles.add(match[1]);
@@ -25,11 +28,11 @@ async function minifyJs(htmlFiles, distDir, srcDir) {
 			const sz = fs.statSync(filePath).size;
 			beforeSize += sz;
 			logger.info(`Minifying JS file: ${file}`);
-			logger.debug({
+			// store debug details for later when we know the output size
+			jsFilesDebug.push({
 				input: filePath,
 				output: 'bundle(scripts.min.js)',
 				inBytes: sz,
-				outBytes: null,
 			});
 		} else {
 			logger.warn(`JS file not found: ${filePath}`);
@@ -53,6 +56,11 @@ async function minifyJs(htmlFiles, distDir, srcDir) {
 			`)
 	`,
 	);
+	// update debug entries with actual output size
+	jsFilesDebug.forEach((d) => {
+		d.outBytes = afterSize; // whole bundle size since files were combined
+		logger.debug(d);
+	});
 	logger.debug({
 		before: beforeSize,
 		after: afterSize,

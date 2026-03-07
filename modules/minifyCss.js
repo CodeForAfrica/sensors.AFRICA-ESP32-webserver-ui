@@ -6,73 +6,42 @@ import { logger } from './logger.js';
 
 const fsp = fs.promises;
 
-async function minifyCss(htmlFiles, distDir, srcDir) {
-	const cssFiles = new Set();
-	const linkRegex =
-		/<link\s+rel=["']stylesheet["']\s+href=["']([^"']+)["']\s*\/?>/g;
+// distDir: output folder, srcDir: root of source files
+// htmlFiles: array of html/js paths used for PurgeCSS content scanning
+async function minifyCss(distDir, srcDir, htmlFiles = []) {
+// locate source stylesheet
+	const cssEntryPath = path.resolve(srcDir, 'css', 'style.css');
 
-	// Extract CSS paths from HTML
-	for (const htmlFile of htmlFiles) {
-		const content = await fsp.readFile(htmlFile, 'utf-8');
-		let match;
-		while ((match = linkRegex.exec(content)) !== null) {
-			// Resolve to absolute path to ensure uniqueness and file accessibility
-			const fullPath = path.resolve(srcDir, match[1]);
-			cssFiles.add(fullPath);
-		}
-	}
+	logger.debug(`Checking path: ${cssEntryPath}`);
 
-	const cssArray = Array.from(cssFiles);
-	if (cssArray.length === 0) {
-		logger.warn('No CSS files found in the provided HTML files.');
+	if (!fs.existsSync(cssEntryPath)) {
+		logger.error(`Entry CSS not found at ${cssEntryPath}`);
 		return { paths: [], before: 0, after: 0 };
 	}
 
-	// log each source file size and emit info/debug entry per file
-	for (const f of cssArray) {
-		if (fs.existsSync(f)) {
-			const sz = fs.statSync(f).size;
-			logger.info(`Minifying CSS file: ${path.basename(f)}`);
-			logger.debug({
-				input: f,
-				output: 'bundle(styles.min.css)',
-				inBytes: sz,
-				outBytes: null,
-			});
-		}
-	}
+	const rawCss = await fsp.readFile(cssEntryPath, 'utf-8');
+	const beforeSize = Buffer.byteLength(rawCss);
 
-	// compute original size
-	let beforeSize = 0;
-	for (const f of cssArray) {
-		if (fs.existsSync(f)) beforeSize += fs.statSync(f).size;
-	}
-
-	// Purge unused styles
-	const purgeCSSResults = await new PurgeCSS().purge({
+	logger.info(`Purging unused styles from ${path.basename(cssEntryPath)}`);
+	const purgeResult = await new PurgeCSS().purge({
 		content: htmlFiles,
-		css: cssArray,
+		css: [{ raw: rawCss }],
 	});
+	const purgedCss = purgeResult[0]?.css ?? rawCss;
 
-	// Combine & Minify
-	const combinedCss = purgeCSSResults.map((r) => r.css).join('\n');
-	const minified = minify(combinedCss).css;
+	logger.info(`Purged size: ${Buffer.byteLength(purgedCss)} bytes`);
+	logger.info(`Minifying CSS: ${path.basename(cssEntryPath)}`);
+	const minified = minify(purgedCss).css;
 
-	// Write output
 	const minifiedPath = path.join(distDir, 'styles.min.css');
-
 	await fsp.mkdir(distDir, { recursive: true });
 	await fsp.writeFile(minifiedPath, minified, 'utf-8');
 
-	const afterSize = minified.length;
-	const diffColor = afterSize < beforeSize ? 'green' : 'red';
+	const afterSize = Buffer.byteLength(minified);
+
 	logger.info(
-		`Created bundle: styles.min.css (` +
-		logger.colorize(`${beforeSize}→${afterSize} bytes`, diffColor) +
-			`)
-	`,
+		`Created bundle: styles.min.css (${beforeSize} → ${afterSize} bytes)`,
 	);
-	logger.debug({ before: beforeSize, after: afterSize, path: minifiedPath });
 
 	return { paths: [minifiedPath], before: beforeSize, after: afterSize };
 }

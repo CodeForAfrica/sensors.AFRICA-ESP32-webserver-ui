@@ -7,20 +7,31 @@ const fsp = fs.promises;
 async function minifyHtml(htmlFiles, minifiedCss, minifiedScript, distDir) {
 	const minifiedPaths = [];
 
+	if (!minifiedCss || !minifiedScript) {
+		logger.error(`Invalid asset paths: CSS=${minifiedCss}, JS=${minifiedScript}`);
+		throw new Error("CSS or Script path is undefined. Check build.js return values.");
+	}
+
+	const cssBasename = path.basename(minifiedCss);
+	const jsBasename = path.basename(minifiedScript);
+
+	logger.info(`Injecting assets: CSS=${cssBasename}, JS=${jsBasename}`);
+
 	for (const htmlFile of htmlFiles) {
 		let content = await fsp.readFile(htmlFile, 'utf-8');
 		const fileName = path.basename(htmlFile);
 
-		// Update asset references
-		content = content
-			.replace(
-				/<link\s+rel=["']stylesheet["']\s+href=["']([^"']+)["']\s*\/?>/g,
-				`<link rel="stylesheet" href="${path.basename(minifiedCss)}">`,
-			)
-			.replace(
-				/<script\s+src=["']([^"']+)["']\s*><\/script>/g,
-				`<script src="${path.basename(minifiedScript)}"></script>`,
-			);
+		// Regex for Stylesheets (handles extra attributes and no-quotes)
+		content = content.replace(
+			/<link\b[^>]*?rel=["']?stylesheet["']?[^>]*?href=["']?([^"'>\s]+)["']?[^>]*?\/?>/gi,
+			`<link rel="stylesheet" href="${cssBasename}">`
+		);
+
+		// Regex for Scripts (handles type="module", extra attributes, and no-quotes)
+		content = content.replace(
+			/<script\b[^>]*?src=["']?([^"'>\s]+)["']?[^>]*?><\/script>/gi,
+			`<script type="module" src="${jsBasename}"></script>`
+		);
 
 		// Perform HTML Minification
 		const minifiedContent = await minify(content, {

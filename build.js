@@ -13,7 +13,9 @@ const fsp = fs.promises;
 
 async function build() {
 	const srcDir = 'src';
-	const htmlFiles = await glob(`${srcDir}/**/*.html`);
+	// gather page HTML files but ignore layout partials
+	let htmlFiles = await glob(`${srcDir}/**/*.html`);
+	htmlFiles = htmlFiles.filter((f) => !f.includes(`${srcDir}/partials/`));
 	const distDir = 'dist';
 
 	// clean dist directory
@@ -25,12 +27,41 @@ async function build() {
 	if (!fs.existsSync(distDir)) await fsp.mkdir(distDir, { recursive: true });
 
 	// run minifiers and receive size info
-	const cssResult = await minifyCss(htmlFiles, distDir, srcDir);
+	// also scan JS for classes that may appear dynamically
+	let contentPaths = [...htmlFiles];
+	const jsFiles = await glob(`${srcDir}/js/**/*.js`);
+	contentPaths.push(...jsFiles);
+	const cssResult = await minifyCss(distDir, srcDir, contentPaths);
 	const jsResult = await minifyJs(htmlFiles, distDir, srcDir);
 	const imgResult = await minifyImages(srcDir, distDir);
 	const svgResult = await minifySvg(srcDir, distDir);
-	const [minifiedCss] = cssResult.paths;
-	const [minifiedScript] = jsResult.paths;
+
+	// copy layout partials to dist so client-side injection can fetch them
+	const partialDir = path.join(srcDir, 'partials');
+	const distPartialDir = path.join(distDir, 'partials');
+	if (fs.existsSync(partialDir)) {
+		await fsp.mkdir(distPartialDir, { recursive: true });
+		// copy each file, preserve relative structure
+		const partialFiles = await glob(`${partialDir}/**/*`);
+		for (const file of partialFiles) {
+			const rel = path.relative(partialDir, file);
+			const dest = path.join(distPartialDir, rel);
+			await fsp.mkdir(path.dirname(dest), { recursive: true });
+			await fsp.copyFile(file, dest);
+		}
+	}
+
+	//  Check if paths actually exist before accessing index [0]
+	if (!cssResult.paths || cssResult.paths.length === 0) {
+		logger.error(
+			'CSS Minification failed: no output path returned. Check your input CSS.',
+		);
+		process.exit(1);
+	}
+
+	const minifiedCss = cssResult.paths[0]; // Safer than destructuring
+	const minifiedScript = jsResult.paths[0];
+
 	await minifyHtml(htmlFiles, minifiedCss, minifiedScript, distDir, srcDir);
 
 	// compute html before/after sizes
