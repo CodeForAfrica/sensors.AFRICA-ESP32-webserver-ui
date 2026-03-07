@@ -9,12 +9,12 @@ const __dirname = dirname(__filename);
 
 const upload = multer({ dest: 'uploads/' });
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3030;
 console.log('Starting demo server...');
-console.log(`Serving static files from: ${join(__dirname, '../src')}`);
+console.log(`Serving static files from: ${join(__dirname, '../dist')}`);
 
-// Serve static files from src directory
-app.use(express.static(path.join(__dirname, '../src')));
+// Serve static files from dist directory
+app.use(express.static(path.join(__dirname, '../dist')));
 
 // Demo endpoints
 
@@ -45,7 +45,7 @@ app.get('/sensor-data', (_req, res) => {
 			humidity: 60,
 		},
 		PM: {
-			'PM1': 10,
+			'PM1': 11,
 			'PM2.5': 20,
 			'PM10': 30,
 		},
