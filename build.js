@@ -36,21 +36,6 @@ async function build() {
 	const imgResult = await minifyImages(srcDir, distDir);
 	const svgResult = await minifySvg(srcDir, distDir);
 
-	// copy layout partials to dist so client-side injection can fetch them
-	const partialDir = path.join(srcDir, 'partials');
-	const distPartialDir = path.join(distDir, 'partials');
-	if (fs.existsSync(partialDir)) {
-		await fsp.mkdir(distPartialDir, { recursive: true });
-		// copy each file, preserve relative structure
-		const partialFiles = await glob(`${partialDir}/**/*`);
-		for (const file of partialFiles) {
-			const rel = path.relative(partialDir, file);
-			const dest = path.join(distPartialDir, rel);
-			await fsp.mkdir(path.dirname(dest), { recursive: true });
-			await fsp.copyFile(file, dest);
-		}
-	}
-
 	//  Check if paths actually exist before accessing index [0]
 	if (!cssResult.paths || cssResult.paths.length === 0) {
 		logger.error(

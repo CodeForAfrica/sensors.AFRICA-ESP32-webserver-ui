@@ -39,14 +39,14 @@ async function minifyCss(distDir, srcDir, htmlFiles = []) {
 	logger.info(`Minifying CSS: ${path.basename(cssEntryPath)}`);
 	const minified = minify(purgedCss).css;
 
-	const minifiedPath = path.join(distDir, 'styles.min.css');
+	const minifiedPath = path.join(distDir, 'style.min.css');
 	await fsp.mkdir(distDir, { recursive: true });
 	await fsp.writeFile(minifiedPath, minified, 'utf-8');
 
 	const afterSize = Buffer.byteLength(minified);
 	const diffColor = afterSize < beforeSize ? 'green' : 'red';
 	logger.info(
-		`Created bundle: styles.min.css (` +
+		`Created bundle: style.min.css (` +
 		logger.colorize(`${beforeSize}→${afterSize}`, diffColor) +
 		` bytes)`,
 	);

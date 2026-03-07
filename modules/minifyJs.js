@@ -31,7 +31,7 @@ async function minifyJs(htmlFiles, distDir, srcDir) {
 			// store debug details for later when we know the output size
 			jsFilesDebug.push({
 				input: filePath,
-				output: 'bundle(scripts.min.js)',
+				output: 'bundle(script.min.js)',
 				inBytes: sz,
 			});
 		} else {
@@ -45,13 +45,13 @@ async function minifyJs(htmlFiles, distDir, srcDir) {
 		mangle: true,
 	});
 
-	const minifiedPath = path.join(distDir, 'scripts.min.js');
+	const minifiedPath = path.join(distDir, 'script.min.js');
 	await fsp.writeFile(minifiedPath, minified.code, 'utf-8');
 
 	const afterSize = minified.code.length;
 	const diffColor = afterSize < beforeSize ? 'green' : 'red';
 	logger.info(
-		`Created bundle: scripts.min.js (` +
+		`Created bundle: script.min.js (` +
 		logger.colorize(`${beforeSize}→${afterSize} bytes`, diffColor) +
 			`)
 	`,
