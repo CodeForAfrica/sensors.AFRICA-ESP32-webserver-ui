@@ -3,9 +3,7 @@ import { glob } from 'glob';
 import imagemin from 'imagemin';
 import imageminMozjpeg from 'imagemin-mozjpeg';
 import imageminPngquant from 'imagemin-pngquant';
-import os from 'os';
 import path from 'path';
-import sharp from 'sharp';
 import { logger } from './logger.js';
 const fsp = fs.promises;
 
@@ -19,9 +17,11 @@ async function minifyImages(srcDir, distDir) {
 		const relativePath = path.relative(srcDir, file);
 		const outputPath = path.join(distDir, relativePath);
 		await fsp.mkdir(path.dirname(outputPath), { recursive: true });
+		const originalSize = fs.statSync(file).size;
+		beforeSize += originalSize;
 
-		// attempt imagemin optimization first (lossless/lossy depending on type)
-		let sourceFile = file;
+		// optimize in-place by extension
+		let writtenOptimized = false;
 		const ext = path.extname(file).toLowerCase();
 		try {
 			const imageminPlugins = [];
@@ -37,46 +37,32 @@ async function minifyImages(srcDir, distDir) {
 				if (
 					result &&
 					result.data &&
-					result.data.length < fs.statSync(file).size
+					result.data.length < originalSize
 				) {
-					// use optimized buffer
-					sourceFile = path.join(os.tmpdir(), path.basename(file));
-					await fsp.writeFile(sourceFile, result.data);
+					await fsp.writeFile(outputPath, result.data);
+					writtenOptimized = true;
+					logger.info(`Minified image: ${relativePath}`);
 				}
 			}
 		} catch (e) {
 			logger.debug('imagemin error', e);
 		}
 
-		const converted = outputPath.replace(/\.(jpg|jpeg|png|gif)$/, '.webp');
-		beforeSize += fs.statSync(sourceFile).size;
-		await sharp(sourceFile)
-			.resize({ width: 800, withoutEnlargement: true })
-			.toFormat('webp', { quality: 75 })
-			.toFile(converted);
-		const outStat = fs.statSync(converted);
-		let finalPath = converted;
-		if (outStat.size >= fs.statSync(sourceFile).size) {
-			// conversion not beneficial: copy original instead
-			await fsp.copyFile(sourceFile, outputPath);
-			finalPath = outputPath;
+		if (!writtenOptimized) {
+			await fsp.copyFile(file, outputPath);
 			logger.info(`Copied original (no savings): ${relativePath}`);
-		} else {
-			logger.info(
-				`Minified: ${relativePath} → ${path.basename(converted)}`,
-			);
 		}
-		const inBytes = fs.statSync(sourceFile).size;
-		const outBytes = fs.statSync(finalPath).size;
+
+		const inBytes = originalSize;
+		const outBytes = fs.statSync(outputPath).size;
 		const diffColor = outBytes < inBytes ? 'green' : 'red';
 		logger.debug(
 			`Image ${relativePath}: ` +
 			logger.colorize(`${inBytes}→${outBytes}`, diffColor),
-			{ input: sourceFile, output: finalPath, inBytes, outBytes },
+			{ input: file, output: outputPath, inBytes, outBytes },
 		);
-		// tally final size rather than preliminary one
-		afterSize += fs.statSync(finalPath).size;
-		outputFiles.push(finalPath);
+		afterSize += outBytes;
+		outputFiles.push(outputPath);
 	}
 	return { paths: outputFiles, before: beforeSize, after: afterSize };
 }
