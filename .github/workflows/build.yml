@@ -57,11 +57,14 @@ jobs:
 
             - name: Commit and push build branch
               run: |
-                  git add .
+                  # Force add everything to bypass .gitignore rules
+                  git add -A --force
+
                   # Only commit if there are changes
                   if ! git diff-index --quiet HEAD --; then
                     git commit -m "chore: auto build from development branch [skip ci]"
-                    git push -u origin build
+                    # Used --force push to ensure the build branch perfectly matches latest dist
+                    git push origin build --force
                   else
                     echo "No changes to commit"
                   fi
