@@ -97,22 +97,31 @@ const UI = {
 		if (el) el.textContent = text;
 	},
 	renderFileTree: (node, indent = 0, currentPath = '') => {
-		return Object.keys(node)
-			.map((key) => {
-				const val = node[key];
-				const fullPath = `${currentPath}/${key}`.replace(/\/+/g, '/');
-				const indentStyle =
-					indent > 0 ? ` style="margin-left:${indent * 20}px;"` : '';
-				if (typeof val === 'object' && val !== null) {
-					return `<div class="file-tree-folder"${indentStyle}><strong>📁 ${key}</strong></div>${UI.renderFileTree(val, indent + 1, fullPath)}`;
-				}
-				return `<div class="sensor-data__row file-tree-file"${indentStyle}>
-					<span class="sensor-data__label">📄 ${key}</span>
-					<a href="/download?file=${encodeURIComponent(fullPath)}" download="${key}" class="btn--primary file-download-link">⏬</a>
-				</div>`;
-			})
-			.join('');
-	},
+        return Object.keys(node)
+            .map((key) => {
+                const val = node[key];
+                const fullPath = `${currentPath}/${key}`.replace(/\/+/g, '/');
+                const indentVar = `--indent: ${indent};`;
+
+                if (typeof val === 'object' && val !== null) {
+                    return `
+                        <div class="file-tree-folder" style="${indentVar}">
+                            <strong>📁 ${key}</strong>
+                        </div>
+                        ${UI.renderFileTree(val, indent + 1, fullPath)}`;
+                }
+
+                return `
+                    <div class="file-tree-file" style="${indentVar}">
+                        <span class="file-name">📄 ${key}</span>
+                        <a href="/download?file=${encodeURIComponent(fullPath)}"
+                        download="${key}"
+                        class="file-download-link"
+                        title="Download ${key}">⏬</a>
+                    </div>`;
+            })
+            .join('');
+    },
 };
 
 /* Navigation (burger + drawer) */

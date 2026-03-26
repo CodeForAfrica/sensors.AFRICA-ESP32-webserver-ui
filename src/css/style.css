@@ -346,17 +346,43 @@ body.nav-open {
 }
 
 /* File tree */
-.file-tree-folder {
-	margin-top: 0.5rem;
-}
+.file-tree-folder,
 .file-tree-file {
-	border-bottom: 1px dashed var(--border-color);
+    padding-left: calc(var(--indent, 0) * 1.25rem);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 2.5rem;
+    border-bottom: 1px solid var(--border-color);
+    transition: background var(--transition);
 }
+
+.file-tree-folder {
+    background: var(--bg-secondary);
+    font-weight: 600;
+}
+
+.file-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 1rem;
+}
+
 .file-download-link {
-	padding: 0.125rem 0.5rem;
-	border-radius: var(--radius);
-	text-decoration: none;
-	font-size: 0.875rem;
+    background: transparent;
+    border: none;
+    padding: 4px;
+    font-size: 1.2rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform var(--transition), background var(--transition);
+}
+
+.file-download-link:hover {
+    /* transform: scale(1.2); */
+    transform: translateY(2px);
 }
 
 /* Progress wrapper */
