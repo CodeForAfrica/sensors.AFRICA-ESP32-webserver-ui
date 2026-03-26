@@ -149,6 +149,23 @@ body.nav-open {
 	text-transform: uppercase;
 	letter-spacing: 0.02em;
 }
+
+/* Footer */
+.site-footer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 1rem 0;
+	background: var(--bg-secondary);
+	border-top: 1px solid var(--border-color);
+	margin-top: auto;
+}
+
+.site-footer small {
+	color: var(--text-muted);
+	font-size: 0.95rem;
+}
+
 .logo {
 	height: 2rem;
 	width: auto;
