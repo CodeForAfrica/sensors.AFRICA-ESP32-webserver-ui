@@ -254,6 +254,15 @@ body.nav-open {
 	display: block;
 }
 
+/* inherit a visible color in dark mode */
+@media (prefers-color-scheme: dark) {
+	.nav-toggle {
+		color: var(--text-white);
+		border-color: var(--border-color);
+		background: var(--bg-secondary);
+	}
+}
+
 @media (max-width: 56rem) {
 	.nav-toggle {
 		display: inline-flex;
