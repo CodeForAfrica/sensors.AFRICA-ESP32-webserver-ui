@@ -316,6 +316,17 @@ const ConfigModule = {
 				.slice(0, 4);
 		});
 
+        // Power Saver switch state label
+        const powerSaver = document.getElementById('powerSaver');
+			const powerSaverStatus = document.getElementById('powerSaverStatus');
+			if (powerSaver && powerSaverStatus) {
+				const updatePowerSaverLabel = () => {
+					powerSaverStatus.textContent = powerSaver.checked ? 'On' : 'Off';
+			};
+			powerSaver.addEventListener('change', updatePowerSaverLabel);
+			updatePowerSaverLabel();
+		}
+
 		// final submit (collect all config-form fields)
 		const saveHandler = async (e) => {
 			e.preventDefault();
@@ -343,6 +354,11 @@ const ConfigModule = {
 					return;
 				}
 				allData.simPin = simPin;
+			}
+
+            // unchecked power saver should be explicit false
+			if (!('powerSaver' in allData)) {
+				allData.powerSaver = false;
 			}
 
 			try {
