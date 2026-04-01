@@ -3,68 +3,32 @@ name: Build and Push to Build Branch
 on:
     push:
         branches:
-            - development
+            - development # Triggers when a PR is merged into development
+
+permissions:
+    contents: write
 
 jobs:
     build-and-push:
         runs-on: ubuntu-latest
-
         steps:
             - name: Checkout code
-              uses: actions/checkout@v6 # Upgrade to v6
-              with:
-                  fetch-depth: 0
+              uses: actions/checkout@v6
 
             - name: Setup Node.js
-              uses: actions/setup-node@v6 # Upgrade to v6
+              uses: actions/setup-node@v6
               with:
-                  node-version: '24' # Upgrade to Node.js 24
+                  node-version: 'lts'
 
-            - name: Install dependencies
-              run: npm ci
-
-            - name: Build project
-              run: npm run build
-
-            - name: Configure git
+            - name: Install and Build
               run: |
-                  git config --local user.email "action@github.com"
-                  git config --local user.name "GitHub Action"
+                  npm ci
+                  npm run build
 
-            - name: Prepare build branch
-              run: |
-                  # Create a temporary directory with only dist contents
-                  mkdir -p /tmp/build-contents
-                  if [ -d "dist" ]; then
-                    cp -r dist/* /tmp/build-contents/
-                  fi
-                  cp README.md /tmp/build-contents/ 2>/dev/null
-
-                  # Create or checkout build branch
-                  git fetch origin
-                  git checkout -B build origin/build 2>/dev/null || git checkout -B build
-
-                  # Clean the current branch (keep only dist content)
-                  find . -maxdepth 1 -not -name '.git' -not -name '.gitignore' -exec rm -rf {} + 2>/dev/null || true
-
-                  # Copy dist contents to root of build branch
-                  cp -r /tmp/build-contents/* .
-
-                  # Add .gitkeep if dist is empty
-                  if [ -z "$(ls -A --ignore=.git)" ]; then
-                    touch .gitkeep
-                  fi
-
-            - name: Commit and push build branch
-              run: |
-                  # Force add everything to bypass .gitignore rules
-                  git add -A --force
-
-                  # Only commit if there are changes
-                  if ! git diff-index --quiet HEAD --; then
-                    git commit -m "chore: auto build from development branch [skip ci]"
-                    # Used --force push to ensure the build branch perfectly matches latest dist
-                    git push origin build --force
-                  else
-                    echo "No changes to commit"
-                  fi
+            - name: Deploy to Build Branch
+              uses: JamesIves/github-pages-deploy-action@v4
+              with:
+                  folder: dist          # ONLY files in dist move to the build branch
+                  branch: build         # The target branch
+                  clean: true           # Deletes everything else (README, LICENSE, etc.)
+                  single-commit: true   # Keeps git history tiny (ideal for submodules)
