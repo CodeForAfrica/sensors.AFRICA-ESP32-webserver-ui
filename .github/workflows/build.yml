@@ -31,4 +31,3 @@ jobs:
                   folder: dist          # ONLY files in dist move to the build branch
                   branch: build         # The target branch
                   clean: true           # Deletes everything else (README, LICENSE, etc.)
-                  single-commit: true   # Keeps git history tiny (ideal for submodules)
