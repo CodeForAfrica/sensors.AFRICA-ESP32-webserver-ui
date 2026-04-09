@@ -1,33 +1,35 @@
 name: Build and Push to Build Branch
 
 on:
-    push:
-        branches:
-            - development # Triggers when a PR is merged into development
+  pull_request:
+    types: [closed]
+    branches:
+      - development # Triggers when a PR is opened against development
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
-    build-and-push:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v6
+  build-and-push:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v6
-              with:
-                  node-version: 'lts/*'
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
 
-            - name: Install and Build
-              run: |
-                  npm ci
-                  npm run build
+      - name: Install and Build
+        run: |
+          npm ci
+          npm run build
 
-            - name: Deploy to Build Branch
-              uses: JamesIves/github-pages-deploy-action@v4
-              with:
-                  folder: dist          # ONLY files in dist move to the build branch
-                  branch: build         # The target branch
-                  clean: true           # Deletes everything else (README, LICENSE, etc.)
+      - name: Deploy to Build Branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist # ONLY files in dist move to the build branch
+          branch: build # The target branch
+          clean: true # Deletes everything else (README, LICENSE, etc.)
