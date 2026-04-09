@@ -20,7 +20,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "lts/*"
+          node-version: "24"
+          cache: "npm"
 
       - name: Install and Build
         run: |
@@ -33,3 +34,4 @@ jobs:
           folder: dist # ONLY files in dist move to the build branch
           branch: build # The target branch
           clean: true # Deletes everything else (README, LICENSE, etc.)
+          commit-message: "Deploying to build branch from PR #${{ github.event.pull_request.number }}"
