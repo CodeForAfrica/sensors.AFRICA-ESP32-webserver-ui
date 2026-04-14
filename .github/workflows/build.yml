@@ -36,6 +36,12 @@ jobs:
           clean: true # Deletes everything else (README, LICENSE, etc.)
           commit-message: "Deploying to build branch from PR #${{ github.event.pull_request.number }}"
 
+      - name: Read Version
+        id: version
+        run: |
+          VERSION=$(cat VERSION)   # a VERSION file must be in the repo root
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Create Tag for Release
         run: |
           git fetch --all
