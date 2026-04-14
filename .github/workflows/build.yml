@@ -35,3 +35,11 @@ jobs:
           branch: build # The target branch
           clean: true # Deletes everything else (README, LICENSE, etc.)
           commit-message: "Deploying to build branch from PR #${{ github.event.pull_request.number }}"
+
+      - name: Create Tag for Release
+        run: |
+          git fetch --all
+          git checkout build
+          TAG="build-${{ github.run_number }}"
+          git tag -a "$TAG" -m "Release from commit ${{ github.sha }}"
+          git push origin "$TAG"
