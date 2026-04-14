@@ -36,10 +36,33 @@ jobs:
           clean: true # Deletes everything else (README, LICENSE, etc.)
           commit-message: "Deploying to build branch from PR #${{ github.event.pull_request.number }}"
 
-      - name: Create Tag for Release
+      - name: Auto-bump Semantic Version
+        id: bump
         run: |
-          git fetch --all
-          git checkout build
-          TAG="build-${{ github.run_number }}"
-          git tag -a "$TAG" -m "Release from commit ${{ github.sha }}"
-          git push origin "$TAG"
+          git fetch --tags
+          # Get latest tag, default to v0.0.0 if none
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Latest tag: $LATEST_TAG"
+
+          # Strip 'v' and split into parts
+          VERSION=${LATEST_TAG#v}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+
+          # Increment patch
+          PATCH=$((PATCH + 1))
+          NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+
+          echo "New tag: $NEW_TAG"
+          echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
+
+      - name: Create Tag and Update VERSIONS
+        run: |
+          git checkout development
+          git tag -a "${{ steps.bump.outputs.new_tag }}" -m "Release ${{ steps.bump.outputs.new_tag }} from commit ${{ github.sha }}"
+          git push origin "${{ steps.bump.outputs.new_tag }}"
+
+          # Append new version to VERSIONS file
+          echo "${{ steps.bump.outputs.new_tag }}" >> VERSIONS
+          git add VERSIONS
+          git commit -m "chore: append ${{ steps.bump.outputs.new_tag }} to VERSIONS"
+          git push origin development
