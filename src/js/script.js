@@ -234,7 +234,7 @@ const FileSystemModule = {
 const ConfigModule = {
   async loadConfig() {
     try {
-      const config = await ApiService.get('/config-data');
+      const config = await ApiService.get('/device-info.json');
 
       if (!config) return;
 
@@ -262,10 +262,16 @@ const ConfigModule = {
 
       if (stagingUrl) {
         stagingUrl.value = config.stagingUrl ?? '';
+        stagingUrl.placeholder = config.stagingUrl ?? ''
+        // disable when production
+        stagingUrl.disabled = config.isLive ?? false;
       }
 
       if (productionUrl) {
         productionUrl.value = config.productionUrl ?? '';
+        productionUrl.placeholder = config.productionUrl ?? '';
+        // disable when staging
+        productionUrl.disabled = !(config.isLive ?? false);
       }
 
       if (goLiveToggle) {

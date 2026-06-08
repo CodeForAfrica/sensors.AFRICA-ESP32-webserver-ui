@@ -51,8 +51,8 @@ let memory = {
 
 // Demo endpoints
 
-// GET /config-data
-app.get('/config-data', (_req, res) => {
+// GET /device-info.json
+app.get('/device-info.json', (_req, res) => {
   // evaluate if any existing config is stored in memory and return it, otherwise return null
   const hasExistingConfig = Object.values(memory).some(
     (value) => value !== undefined,
@@ -128,9 +128,9 @@ app.get('/sensor-data', (_req, res) => {
       humidity: 60,
     },
     PM: {
-			'PM1': 11,
+      'PM1': 11,
       'PM2.5': 20,
-			'PM10': 30,
+      'PM10': 30,
     },
   });
 });
@@ -144,10 +144,10 @@ app.get('/device-details', (_req, res) => {
       'SIM ICCID': '8914800000123456789',
       'Model ID': 'Quectel‑EG91',
       'Firmware Version': 'EG91R9M0A03',
-			'IMEI': '356789012345678',
+      'IMEI': '356789012345678',
     },
     wifi: {
-			'SSID': 'Home WiFi',
+      'SSID': 'Home WiFi',
       'Signal Strength': -45,
       'Encryption Type': 'WPA2',
     },
