@@ -3,6 +3,7 @@ import express from 'express';
 import multer from 'multer';
 import path, { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -35,15 +36,15 @@ app.use(express.static(path.join(__dirname, '../dist')));
 
 // with existing config
 let memory = {
-	wifiSSID : 'Home WiFi',
-	wifiPassword : 'password123',
-	apn : 'internet',
-	simPin : '1234',
-	powerSaver : true,
+  ssid: 'Home WiFi',
+  wifiPwd: 'password123',
+  apn: 'internet',
+  simPin: '1234',
+  powerSaver: true,
 
-	stagingUrl : 'https://staging.sensors.africa',
-	productionUrl : 'https://api.sensors.africa',
-	isLive : false,
+  stagingHost: 'https://staging.sensors.africa',
+  productionHost: 'https://api.sensors.africa',
+  isLive: false,
 }
 
 // with no existing config
@@ -51,8 +52,12 @@ let memory = {
 
 // Demo endpoints
 
-// GET /device-info.json
-app.get('/device-info.json', (_req, res) => {
+app.get('/ping', (_req, res) => {
+  res.send('pong');
+});
+
+// GET /device-config
+app.get('/device-config.json', (_req, res) => {
   // evaluate if any existing config is stored in memory and return it, otherwise return null
   const hasExistingConfig = Object.values(memory).some(
     (value) => value !== undefined,
@@ -72,9 +77,9 @@ app.post('/switch-mode', express.json(), (req, res) => {
   console.log('Switching mode. Received isLive:', isLive);
   memory.isLive = isLive;
   console.log(
-    `Switched to ${isLive ? 'Production' : 'Staging'} mode. Active URL: ${isLive ? memory.productionUrl : memory.stagingUrl}`,
+    `Switched to ${isLive ? 'Production' : 'Staging'} mode. Active URL: ${isLive ? memory.productionHost : memory.stagingHost}`,
   );
-  res.json({ status: 'success', isLive: memory.isLive, activeUrl: isLive ? memory.productionUrl : memory.stagingUrl });
+  res.json({ status: 'success', isLive: memory.isLive, activeUrl: isLive ? memory.productionHost : memory.stagingHost });
 });
 
 // GET /device-id
@@ -183,29 +188,90 @@ app.post('/save-config', express.json(), (req, res) => {
   console.log('Received config data:', req.body);
 
   const {
-    wifiSSID,
-    wifiPassword,
+    ssid,
+    wifiPwd,
     apn,
     simPin,
     powerSaver,
-    stagingUrl,
-    productionUrl,
+    stagingHost,
+    productionHost,
     isLive,
   } = req.body;
 
   // override stored configuration in memory with received config
-  if (wifiSSID !== undefined) memory.wifiSSID = wifiSSID;
-  if (wifiPassword !== undefined) memory.wifiPassword = wifiPassword;
+  if (ssid !== undefined) memory.ssid = ssid;
+  if (wifiPwd !== undefined) memory.wifiPwd = wifiPwd;
   if (apn !== undefined) memory.apn = apn;
   if (simPin !== undefined) memory.simPin = simPin;
   if (powerSaver !== undefined) memory.powerSaver = powerSaver;
-  if (stagingUrl !== undefined) memory.stagingUrl = stagingUrl;
-  if (productionUrl !== undefined) memory.productionUrl = productionUrl;
+  if (stagingHost !== undefined) memory.stagingHost = stagingHost;
+  if (productionHost !== undefined) memory.productionHost = productionHost;
   if (isLive !== undefined) memory.isLive = isLive;
 
   res.json({ status: 'Config received' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Demo server running at http://localhost:${PORT}`);
+// File location
+const DATA_FILE = path.join(process.cwd(), 'sensor-data.json');
+
+// Helper: read existing data safely
+function readDataFile() {
+  try {
+    if (!fs.existsSync(DATA_FILE)) {
+      fs.writeFileSync(DATA_FILE, JSON.stringify([]));
+      return [];
+    }
+
+    const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+    return JSON.parse(raw || '[]');
+  } catch (err) {
+    console.error('Error reading JSON file:', err);
+    return [];
+  }
+}
+
+// Helper: write data
+function writeDataFile(data) {
+  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+}
+
+// POST /v1/push-sensor-data
+app.post('/v1/push-sensor-data', express.json(), (req, res) => {
+  console.log('Sensor data received:', req.body);
+
+  const { PM, DHT } = req.body;
+
+  if (!PM || !DHT) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid payload. Expected PM and DHT objects.',
+    });
+  }
+
+  // Read existing records
+  const existingData = readDataFile();
+
+  // Add new entry
+  const newEntry = {
+    PM,
+    DHT,
+    receivedAt: new Date().toISOString(),
+  };
+
+  existingData.push(newEntry);
+
+  // Save back to file
+  writeDataFile(existingData);
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Sensor data saved',
+    receivedAt: new Date().toISOString(),
+  });
+});
+
+const HOST = '0.0.0.0';
+
+app.listen(PORT, HOST, () => {
+  console.log(`Demo server running at http://${HOST}:${PORT}`);
 });

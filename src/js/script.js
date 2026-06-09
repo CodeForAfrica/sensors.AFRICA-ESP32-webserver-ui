@@ -234,7 +234,7 @@ const FileSystemModule = {
 const ConfigModule = {
   async loadConfig() {
     try {
-      const config = await ApiService.get('/device-info.json');
+      const config = await ApiService.get('/device-config.json');
 
       if (!config) return;
 
@@ -245,12 +245,13 @@ const ConfigModule = {
       const apn = document.getElementById('apn');
       const simPin = document.getElementById('simPin');
       const powerSaver = document.getElementById('powerSaver');
-      const stagingUrl = document.getElementById('stagingUrl');
-      const productionUrl = document.getElementById('productionUrl');
+      const stagingHost = document.getElementById('stagingHost');
+      const productionHost = document.getElementById('productionHost');
       const goLiveToggle = document.getElementById('goLiveToggle');
+      const goLiveStatus = document.getElementById('goLiveStatus');
 
-      if (ssid) ssid.value = config.wifiSSID ?? '';
-      if (wifiPwd) wifiPwd.value = config.wifiPassword ?? '';
+      if (ssid) ssid.value = config.ssid ?? '';
+      if (wifiPwd) wifiPwd.value = config.wifiPwd ?? '';
       if (apn) apn.value = config.apn ?? '';
       if (simPin) simPin.value = config.simPin ?? '';
 
@@ -260,23 +261,23 @@ const ConfigModule = {
           config.powerSaver ? 'On' : 'Off';
       }
 
-      if (stagingUrl) {
-        stagingUrl.value = config.stagingUrl ?? '';
-        stagingUrl.placeholder = config.stagingUrl ?? ''
+      if (stagingHost) {
+        stagingHost.value = config.stagingHost ?? '';
+        stagingHost.placeholder = config.stagingHost ?? '';
         // disable when production
-        stagingUrl.disabled = config.isLive ?? false;
+        stagingHost.disabled = config.isLive ?? false;
       }
 
-      if (productionUrl) {
-        productionUrl.value = config.productionUrl ?? '';
-        productionUrl.placeholder = config.productionUrl ?? '';
+      if (productionHost) {
+        productionHost.value = config.productionHost ?? '';
+        productionHost.placeholder = config.productionHost ?? '';
         // disable when staging
-        productionUrl.disabled = !(config.isLive ?? false);
+        productionHost.disabled = !(config.isLive ?? false);
       }
 
       if (goLiveToggle) {
         goLiveToggle.checked = !!config.isLive;
-        document.getElementById('goLiveStatus').textContent = config.isLive
+        goLiveStatus.textContent = goLiveToggle.checked
           ? 'Production'
           : 'Staging';
       }
@@ -289,6 +290,8 @@ const ConfigModule = {
   forms: [],
   init() {
     this.forms = Array.from(document.querySelectorAll('.config-form'));
+
+    console.log('Config forms found:', this.forms);
     if (this.forms.length === 0) return;
 
     // stepper indicators
@@ -389,18 +392,7 @@ const ConfigModule = {
           : 'Staging';
       };
 
-      goLiveToggle.addEventListener('change', async () => {
-        updateGoLiveLabel();
-
-        try {
-          await ApiService.post('/switch-mode', {
-            isLive: goLiveToggle.checked,
-          });
-        } catch (err) {
-          console.error('Failed to switch mode', err);
-        }
-      });
-
+      goLiveToggle.addEventListener('change', updateGoLiveLabel);
       updateGoLiveLabel();
     }
 
@@ -438,18 +430,25 @@ const ConfigModule = {
         allData.powerSaver = false;
       }
 
+      // isLive toggle
+      if (!('isLive' in allData)) {
+        allData.isLive = false;
+      }
+
+      console.log('Saving config', allData);
+
       try {
         await ApiService.post('/save-config', allData);
         alert('Success! Device is restarting...');
-        window.location.href = '/';
+        // window.location.href = "/";
       } catch (err) {
         alert('Failed to save: ' + (err.message || err));
       }
     };
-    // attach to powerForm submit (final step form)
-    document
-      .getElementById('powerForm')
-      ?.addEventListener('submit', saveHandler);
+
+    // handle submit button
+    const submitBtn = document.getElementById('submit');
+    submitBtn?.addEventListener('click', saveHandler);
 
     // skip button
     document
