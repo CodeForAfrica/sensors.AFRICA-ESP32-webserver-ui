@@ -392,15 +392,9 @@ const ConfigModule = {
       goLiveToggle.addEventListener('change', async () => {
         updateGoLiveLabel();
 
-        // get active Mode based on toggle state and update server
-        const activeMode = goLiveToggle.checked
-          ? document.getElementById('productionUrl').value
-          : document.getElementById('stagingUrl').value;
-
         try {
           await ApiService.post('/switch-mode', {
             isLive: goLiveToggle.checked,
-            activeMode,
           });
         } catch (err) {
           console.error('Failed to switch mode', err);

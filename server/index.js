@@ -68,13 +68,13 @@ app.get('/device-info.json', (_req, res) => {
 app.post('/switch-mode', express.json(), (req, res) => {
   console.log('Received mode switch request:', req.body);
 
-  const { isLive, activeMode } = req.body;
+  const { isLive } = req.body;
   console.log('Switching mode. Received isLive:', isLive);
   memory.isLive = isLive;
   console.log(
-    `Switched to ${isLive ? 'Production' : 'Staging'} mode. Active URL: ${activeMode}`,
+    `Switched to ${isLive ? 'Production' : 'Staging'} mode. Active URL: ${isLive ? memory.productionUrl : memory.stagingUrl}`,
   );
-  res.json({ status: 'success', isLive: memory.isLive, activeUrl: activeMode });
+  res.json({ status: 'success', isLive: memory.isLive, activeUrl: isLive ? memory.productionUrl : memory.stagingUrl });
 });
 
 // GET /device-id
