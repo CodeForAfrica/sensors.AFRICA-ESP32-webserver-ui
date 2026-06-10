@@ -281,6 +281,22 @@ const ConfigModule = {
           ? 'Production'
           : 'Staging';
       }
+
+      goLiveToggle.addEventListener('change', () => {
+        const isLive = goLiveToggle.checked;
+
+        // 🔥 FIX: update disabled states dynamically
+        stagingHost.disabled = isLive;
+        productionHost.disabled = !isLive;
+
+        if (isLive) {
+          productionHost.value = productionHost.value || stagingHost.value;
+        } else {
+          stagingHost.value = stagingHost.value || productionHost.value;
+        }
+
+        goLiveStatus.textContent = isLive ? 'Production' : 'Staging';
+      });
     } catch (err) {
       console.error('Failed to load config', err);
     }
@@ -425,14 +441,19 @@ const ConfigModule = {
         allData.simPin = simPin;
       }
 
-      // unchecked power saver should be explicit false
-      if (!('powerSaver' in allData)) {
-        allData.powerSaver = false;
-      }
+      allData.powerSaver = !!allData.powerSaver;
+      allData.isLive = !!allData.isLive;
 
-      // isLive toggle
-      if (!('isLive' in allData)) {
-        allData.isLive = false;
+      if (allData.isLive) {
+        // production mode
+        delete allData.stagingHost;
+
+        allData.productionHost = (allData.productionHost || '').trim();
+      } else {
+        // staging mode
+        delete allData.productionHost;
+
+        allData.stagingHost = (allData.stagingHost || '').trim();
       }
 
       console.log('Saving config', allData);
