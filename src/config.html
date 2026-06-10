@@ -69,6 +69,18 @@
           >
             3
           </button>
+
+          <button
+            type="button"
+            class="stepper__indicator"
+            data-step="3"
+            role="tab"
+            aria-selected="false"
+            aria-controls="step-3"
+            id="step-ind-3"
+          >
+            4
+          </button>
         </div>
 
         <!-- Step 1: WiFi -->
@@ -90,13 +102,13 @@
 
             <div class="form-group">
               <label for="ssid">WiFi SSID</label>
-              <input type="text" id="ssid" name="wifiSSID" autocomplete="off" />
+              <input type="text" id="ssid" name="ssid" autocomplete="off" />
             </div>
 
             <div class="form-group">
               <label for="wifiPwd">WiFi Password</label>
               <div class="password-wrapper">
-                <input type="password" id="wifiPwd" name="wifiPassword" />
+                <input type="password" id="wifiPwd" name="wifiPwd" />
                 <label class="show-password-label" for="toggle-wifiPwd">
                   <input
                     type="checkbox"
@@ -172,9 +184,7 @@
           aria-hidden="true"
         >
           <fieldset>
-            <legend class="sensor-group__title">
-              Power &amp; API Management
-            </legend>
+            <legend class="sensor-group__title">Power Management</legend>
 
             <div class="form-group power-switch">
               <label class="toggle-switch">
@@ -185,35 +195,52 @@
               </label>
             </div>
 
-            <hr class="form-divider" />
+            <div class="step-btns">
+              <button type="button" class="btn prev-btn" data-prev="1">
+                Previous
+              </button>
 
-            <!-- API Endpoints for Data Uploads -->
+              <button
+                type="button"
+                class="btn btn--primary next-btn"
+                data-next="3"
+              >
+                Next
+              </button>
+            </div>
+          </fieldset>
+        </form>
+
+        <form
+          id="deploymentForm"
+          class="config-form step hidden"
+          data-step="3"
+          aria-hidden="true"
+        >
+          <fieldset>
+            <legend class="sensor-group__title">
+              API & Deployment Settings
+            </legend>
+
             <div class="form-group">
-              <label for="stagingUrl">Staging API URL</label>
-              <input
-                type="url"
-                id="stagingUrl"
-                name="stagingUrl"
-              />
+              <label for="stagingHost">Staging API HOST</label>
+              <input type="url" id="stagingHost" name="stagingHost" />
             </div>
 
             <div class="form-group">
-              <label for="productionUrl">Production API URL</label>
-              <input
-                type="url"
-                id="productionUrl"
-                name="productionUrl"
-              />
+              <label for="productionHost">Production API HOST</label>
+              <input type="url" id="productionHost" name="productionHost" />
             </div>
 
             <hr class="form-divider" />
 
-            <!-- GO LIVE Switch -->
             <div class="form-group go-live-switch-wrapper">
               <label class="toggle-switch go-live-switch">
                 <input type="checkbox" id="goLiveToggle" name="isLive" />
                 <span class="toggle-track"></span>
-                <span class="toggle-label"> <strong>GO LIVE:</strong></span>
+                <span class="toggle-label">
+                  <strong>GO LIVE:</strong>
+                </span>
                 <span id="goLiveStatus" class="status-text font-bold">
                   Staging
                 </span>
@@ -221,10 +248,11 @@
             </div>
 
             <div class="step-btns">
-              <button type="button" class="btn prev-btn" data-prev="1">
+              <button type="button" class="btn prev-btn" data-prev="2">
                 Previous
               </button>
-              <button type="submit" class="btn btn--primary">
+
+              <button id="submit" type="submit" class="btn btn--primary">
                 Save Config
               </button>
             </div>

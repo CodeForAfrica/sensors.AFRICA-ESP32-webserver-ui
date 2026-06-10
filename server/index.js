@@ -237,14 +237,19 @@ function writeDataFile(data) {
 
 // POST /v1/push-sensor-data
 app.post('/v1/push-sensor-data', express.json(), (req, res) => {
-  console.log('Sensor data received:', req.body);
+  console.log('Sensor data received:');
+  console.log(JSON.stringify(req.body, null, 2));
 
-  const { PM, DHT } = req.body;
+  const {software_version, sensordatavalues} = req.body;
 
-  if (!PM || !DHT) {
+  if (
+    typeof software_version !== 'string' ||
+    !Array.isArray(sensordatavalues)
+  ) {
     return res.status(400).json({
       status: 'error',
-      message: 'Invalid payload. Expected PM and DHT objects.',
+      message:
+        'Invalid payload. Expected software_version and sensordatavalues array.',
     });
   }
 
@@ -253,9 +258,8 @@ app.post('/v1/push-sensor-data', express.json(), (req, res) => {
 
   // Add new entry
   const newEntry = {
-    PM,
-    DHT,
-    receivedAt: new Date().toISOString(),
+    software_version,
+    sensordatavalues,
   };
 
   existingData.push(newEntry);
