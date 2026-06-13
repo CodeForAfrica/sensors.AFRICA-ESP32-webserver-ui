@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -39,9 +41,14 @@ jobs:
       - name: Auto-bump Semantic Version
         id: bump
         run: |
-          git fetch --tags
-          # Get latest tag, default to v0.0.0 if none
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          git fetch --force --tags
+
+          LATEST_TAG=$(git tag -l "v*" | sort -V | tail -n 1)
+
+          if [ -z "$LATEST_TAG" ]; then
+            LATEST_TAG="v0.0.0"
+          fi
+
           echo "Latest tag: $LATEST_TAG"
 
           # Strip 'v' and split into parts
@@ -58,6 +65,15 @@ jobs:
       - name: Create Tag and Update VERSIONS
         run: |
           git checkout development
+
+          if git rev-parse "${{ steps.bump.outputs.new_tag }}" >/dev/null 2>&1; then
+            echo "Tag ${{ steps.bump.outputs.new_tag }} already exists. Skipping."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git tag -a "${{ steps.bump.outputs.new_tag }}" -m "Release ${{ steps.bump.outputs.new_tag }} from commit ${{ github.sha }}"
           git push origin "${{ steps.bump.outputs.new_tag }}"
 
