@@ -461,7 +461,7 @@ const ConfigModule = {
       try {
         await ApiService.post('/save-config', allData);
         alert('Success! Device is restarting...');
-        // window.location.href = "/";
+        window.location.href = "/";
       } catch (err) {
         alert('Failed to save: ' + (err.message || err));
       }
