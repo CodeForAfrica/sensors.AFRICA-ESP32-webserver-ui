@@ -42,8 +42,8 @@ let memory = {
   simPin: '1234',
   powerSaver: true,
 
-  stagingHost: 'https://staging.sensors.africa',
-  productionHost: 'https://api.sensors.africa',
+  stagingHost: 'staging.sensors.africa',
+  productionHost: 'api.sensors.africa',
   isLive: false,
 }
 
@@ -240,7 +240,7 @@ app.post('/v1/push-sensor-data', express.json(), (req, res) => {
   console.log('Sensor data received:');
   console.log(JSON.stringify(req.body, null, 2));
 
-  const {software_version, sensordatavalues} = req.body;
+  const { software_version, sensordatavalues } = req.body;
 
   if (
     typeof software_version !== 'string' ||
