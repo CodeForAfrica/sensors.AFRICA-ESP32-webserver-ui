@@ -64,12 +64,14 @@ jobs:
 
       - name: Create Tag and Update VERSIONS
         run: |
-          git checkout development
-
+          # Check tag existence using refs
           if git rev-parse "${{ steps.bump.outputs.new_tag }}" >/dev/null 2>&1; then
             echo "Tag ${{ steps.bump.outputs.new_tag }} already exists. Skipping."
             exit 0
           fi
+
+          # Checkout development branch to create the tag and update VERSIONS
+          git checkout development
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
