@@ -31,7 +31,7 @@ Most resources are served from the LittleFS filesystem and some operations opera
 
 - **Response:** plain text containing the current device ID (e.g. `ESP32-94255ABA2010`).
 
-### `/device-info.json` (GET)
+### `/device-config.json` (GET)
 
 - **Response:** JSON object from `getDeviceConfig()` containing the stored device configuration.
 
@@ -143,7 +143,7 @@ curl -OJ "http://192.168.4.1/download?file=%2FSENSORSDATA%2F2026%2FMAR.csv"
 
 ### `/device-details` (GET)
 
-- **Response:** JSON representation of `device_info` document, identical to `/device-info.json`
+- **Response:** JSON representation of `device_info` document.
 
 - **Response:** JSON object containing device details
 ```json
