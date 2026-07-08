@@ -42,8 +42,8 @@ let memory = {
   simPin: '1234',
   powerSaver: true,
 
-  stagingHost: 'staging.sensors.africa',
-  productionHost: 'api.sensors.africa',
+  stagingUrl: 'https://demo-sensor-data-staging-api.vercel.app/v1/push-sensor-data',
+  productionUrl: 'https://demo-sensor-data-production-api.vercel.app/v1/push-sensor-data',
   isLive: false,
 }
 
@@ -193,8 +193,8 @@ app.post('/save-config', express.json(), (req, res) => {
     apn,
     simPin,
     powerSaver,
-    stagingHost,
-    productionHost,
+    stagingUrl,
+    productionUrl,
     isLive,
   } = req.body;
 
@@ -204,8 +204,8 @@ app.post('/save-config', express.json(), (req, res) => {
   if (apn !== undefined) memory.apn = apn;
   if (simPin !== undefined) memory.simPin = simPin;
   if (powerSaver !== undefined) memory.powerSaver = powerSaver;
-  if (stagingHost !== undefined) memory.stagingHost = stagingHost;
-  if (productionHost !== undefined) memory.productionHost = productionHost;
+  if (stagingUrl !== undefined) memory.stagingUrl = stagingUrl;
+  if (productionUrl !== undefined) memory.productionUrl = productionUrl;
   if (isLive !== undefined) memory.isLive = isLive;
 
   res.json({ status: 'Config received' });
