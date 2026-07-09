@@ -245,8 +245,8 @@ const ConfigModule = {
       const apn = document.getElementById('apn');
       const simPin = document.getElementById('simPin');
       const powerSaver = document.getElementById('powerSaver');
-      const stagingHost = document.getElementById('stagingHost');
-      const productionHost = document.getElementById('productionHost');
+      const stagingUrl = document.getElementById('stagingUrl');
+      const productionUrl = document.getElementById('productionUrl');
       const goLiveToggle = document.getElementById('goLiveToggle');
       const goLiveStatus = document.getElementById('goLiveStatus');
 
@@ -261,18 +261,18 @@ const ConfigModule = {
           config.powerSaver ? 'On' : 'Off';
       }
 
-      if (stagingHost) {
-        stagingHost.value = config.stagingHost ?? '';
-        stagingHost.placeholder = config.stagingHost ?? '';
+      if (stagingUrl) {
+        stagingUrl.value = config.stagingUrl ?? '';
+        stagingUrl.placeholder = config.stagingUrl ?? '';
         // disable when production
-        stagingHost.disabled = config.isLive ?? false;
+        stagingUrl.disabled = config.isLive ?? false;
       }
 
-      if (productionHost) {
-        productionHost.value = config.productionHost ?? '';
-        productionHost.placeholder = config.productionHost ?? '';
+      if (productionUrl) {
+        productionUrl.value = config.productionUrl ?? '';
+        productionUrl.placeholder = config.productionUrl ?? '';
         // disable when staging
-        productionHost.disabled = !(config.isLive ?? false);
+        productionUrl.disabled = !(config.isLive ?? false);
       }
 
       if (goLiveToggle) {
@@ -286,13 +286,13 @@ const ConfigModule = {
         const isLive = goLiveToggle.checked;
 
         // 🔥 FIX: update disabled states dynamically
-        stagingHost.disabled = isLive;
-        productionHost.disabled = !isLive;
+        stagingUrl.disabled = isLive;
+        productionUrl.disabled = !isLive;
 
         if (isLive) {
-          productionHost.value = productionHost.value || stagingHost.value;
+          productionUrl.value = productionUrl.value || stagingUrl.value;
         } else {
-          stagingHost.value = stagingHost.value || productionHost.value;
+          stagingUrl.value = stagingUrl.value || productionUrl.value;
         }
 
         goLiveStatus.textContent = isLive ? 'Production' : 'Staging';
@@ -446,14 +446,14 @@ const ConfigModule = {
 
       if (allData.isLive) {
         // production mode
-        delete allData.stagingHost;
+        delete allData.stagingUrl;
 
-        allData.productionHost = (allData.productionHost || '').trim();
+        allData.productionUrl = (allData.productionUrl || '').trim();
       } else {
         // staging mode
-        delete allData.productionHost;
+        delete allData.productionUrl;
 
-        allData.stagingHost = (allData.stagingHost || '').trim();
+        allData.stagingUrl = (allData.stagingUrl || '').trim();
       }
 
       console.log('Saving config', allData);
