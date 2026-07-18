@@ -1,13 +1,10 @@
 {
-	"delay": "500",
-	"exec": "npm run build",
-	"ext": "html,css,js,png,jpg,svg",
-	"legacyWatch": false,
-	"watch": [
-		"src/**/*.html",
-		"src/**/*.css",
-		"src/**/*.js",
-		"src/**/*.png",
-		"src/**/*.jpg",
-		"src/**/*.svg"]
+  "delay": 500,
+  "exec": "npm run build:debug",
+  "ext": "html,css,js,png,jpg,svg",
+  "legacyWatch": false,
+  "watch": [
+    "server/",
+    "src/"
+  ]
 }

@@ -33,13 +33,14 @@
   },
   "scripts": {
     "build": "node build.js",
-    "build:debug": "LOG_LEVEL=debug npm run build",
+    "build:debug": "npm run clean && LOG_LEVEL=debug npm run build",
     "clean:svgs": "svgcleaner src dist || echo 'svgcleaner not found'",
-    "dev": "npm run build:debug && npm run watch",
+    "dev": "npm run watch",
+    "clean": "rm -rf dist",
     "optimize:svgs": "npx svgo -f src/icons -o dist/icons",
     "start": "node server/index.js",
     "test": "jest",
-    "watch": "nodemon --watch src --ext js,css,html --exec \"npm run build:debug && npm run start\""
+    "watch": "nodemon"
   },
   "type": "module",
   "version": "1.0.0"
