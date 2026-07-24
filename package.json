@@ -16,7 +16,7 @@
     "nodemon": "^3.1.14",
     "purgecss": "^8.0.0",
     "sharp": "^0.34.5",
-    "svgo": "^4.0.1",
+    "svgo": "^4.0.2",
     "terser": "^5.46.1"
   },
   "description": "Web server user interface development for ESP32 boards.",
