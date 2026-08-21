@@ -1,6 +1,6 @@
 {
   "delay": 500,
-  "exec": "npm run build:debug",
+  "exec": "npm run serve",
   "ext": "html,css,js,png,jpg,svg",
   "legacyWatch": false,
   "watch": [
