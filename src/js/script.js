@@ -294,8 +294,9 @@ const ConfigModule = {
       }
 
       if (haEnable) {
-        haEnable.checked = !!config.haEnable;
-        if (haEnableStatus) haEnableStatus.textContent = config.haEnable ? 'Enabled' : 'Disabled';
+          const isHaEnabled = Number(config.haEnable) === 1 || config.haEnable === true;
+          haEnable.checked = isHaEnabled;
+          if (haEnableStatus) haEnableStatus.textContent = isHaEnabled ? 'Enabled' : 'Disabled';
       }
       if (haMqttBroker) haMqttBroker.value = config.haMqttBroker ?? '';
       if (haMqttPort) haMqttPort.value = config.haMqttPort ?? 1883;
@@ -488,7 +489,7 @@ const ConfigModule = {
         allData.stagingUrl = (allData.stagingUrl || '').trim();
       }
 
-      allData.haEnable = !!allData.haEnable;
+      allData.haEnable = allData.haEnable ? 1 : 0;
       allData.haMqttPort = parseInt(allData.haMqttPort, 10) || 1883;
 
       console.log('Saving config', allData);

@@ -32,7 +32,7 @@ const DEFAULT_CONFIG = {
   productionUrl: 'https://demo-sensor-data-production-api.vercel.app/v1/push-sensor-data',
   isLive: false,
   // Home Assistant MQTT configuration
-  haEnable: false,
+  haEnable: 0,
   haMqttBroker: '',
   haMqttPort: 1883,
   haMqttUsername: '',
