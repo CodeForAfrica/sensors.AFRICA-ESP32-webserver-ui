@@ -32,15 +32,12 @@ const DEFAULT_CONFIG = {
   productionUrl: 'https://demo-sensor-data-production-api.vercel.app/v1/push-sensor-data',
   isLive: false,
   // Home Assistant MQTT configuration
-  haEnable: 0,
+  haEnabled: 0,
   haMqttBroker: '',
   haMqttPort: 1883,
   haMqttUsername: '',
   haMqttPassword: '',
-  haDiscoveryPrefix: 'homeassistant',
   haDeviceName: '',
-  haDeviceManufacturer: '',
-  haDeviceModel: '',
 };
 
 const DEMO_FILE_TREE = {
@@ -170,6 +167,11 @@ app.get('/sensor-data', (_req, res) => {
     DHT: { temperature: 22.5, humidity: 60 },
     PM: { 'PM1': 11, 'PM2.5': 20, 'PM10': 30 },
   });
+});
+
+// Returns the config page (frontend asset)
+app.get('/config', (_req, res) => {
+  res.sendFile(path.join(DIST_DIR, 'config.html'));
 });
 
 // Returns diagnostic info about GSM and WiFi connectivity

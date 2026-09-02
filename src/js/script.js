@@ -255,10 +255,7 @@ const ConfigModule = {
       const haMqttPort = document.getElementById('haMqttPort');
       const haMqttUsername = document.getElementById('haMqttUsername');
       const haMqttPassword = document.getElementById('haMqttPassword');
-      const haDiscoveryPrefix = document.getElementById('haDiscoveryPrefix');
       const haDeviceName = document.getElementById('haDeviceName');
-      const haDeviceManufacturer = document.getElementById('haDeviceManufacturer');
-      const haDeviceModel = document.getElementById('haDeviceModel');
       const haEnableStatus = document.getElementById('haEnableStatus');
 
       if (ssid) ssid.value = config.ssid ?? '';
@@ -302,10 +299,7 @@ const ConfigModule = {
       if (haMqttPort) haMqttPort.value = config.haMqttPort ?? 1883;
       if (haMqttUsername) haMqttUsername.value = config.haMqttUsername ?? '';
       if (haMqttPassword) haMqttPassword.value = config.haMqttPassword ?? '';
-      if (haDiscoveryPrefix) haDiscoveryPrefix.value = config.haDiscoveryPrefix ?? 'homeassistant';
       if (haDeviceName) haDeviceName.value = config.haDeviceName ?? '';
-      if (haDeviceManufacturer) haDeviceManufacturer.value = config.haDeviceManufacturer ?? '';
-      if (haDeviceModel) haDeviceModel.value = config.haDeviceModel ?? '';
 
       goLiveToggle.addEventListener('change', () => {
         const isLive = goLiveToggle.checked;
