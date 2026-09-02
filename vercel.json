@@ -1,0 +1,67 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server/index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "dist/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/ping",
+      "dest": "server/index.js"
+    },
+    {
+      "src": "/v1/get-sensor-data",
+      "dest": "server/index.js"
+    },
+    {
+      "src": "/v1/push-sensor-data",
+      "dest": "server/index.js"
+    },
+    {
+      "src": "/device-id",
+      "dest": "server/index.js"
+    },
+    {
+      "src": "/sensor-data",
+      "dest": "server/index.js"
+    },
+    {
+      "src": "/device-details",
+      "dest": "server/index.js"
+    },
+    {
+      "src": "/available-hotspots",
+      "dest": "server/index.js"
+    },
+    {
+      "src": "/list-files",
+      "dest": "server/index.js"
+    },
+    {
+      "src": "/download",
+      "dest": "server/index.js"
+    },
+    {
+      "src": "/device-config.json",
+      "dest": "server/index.js"
+    },
+    {
+      "src": "/save-config",
+      "dest": "server/index.js"
+    },
+    {
+      "src": "/ota_upload",
+      "dest": "server/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "dist/$1"
+    }
+  ]
+}
