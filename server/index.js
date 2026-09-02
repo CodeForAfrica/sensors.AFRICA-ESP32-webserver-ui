@@ -31,6 +31,16 @@ const DEFAULT_CONFIG = {
   stagingUrl: 'https://demo-sensor-data-staging-api.vercel.app/v1/push-sensor-data',
   productionUrl: 'https://demo-sensor-data-production-api.vercel.app/v1/push-sensor-data',
   isLive: false,
+  // Home Assistant MQTT configuration
+  haEnable: 0,
+  haMqttBroker: '',
+  haMqttPort: 1883,
+  haMqttUsername: '',
+  haMqttPassword: '',
+  haDiscoveryPrefix: 'homeassistant',
+  haDeviceName: '',
+  haDeviceManufacturer: '',
+  haDeviceModel: '',
 };
 
 const DEMO_FILE_TREE = {
@@ -256,7 +266,7 @@ app.post('/ota_upload', upload.single('firmware'), (req, res) => {
   res.json({ status: 'success', message: 'Firmware uploaded (demo)' });
 });
 
-
+console.log("env: ", process.env.NODE_ENV);
 
 // Start the server only if not in production mode
 if (process.env.NODE_ENV !== 'production') {

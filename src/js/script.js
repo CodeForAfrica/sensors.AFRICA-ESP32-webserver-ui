@@ -250,6 +250,17 @@ const ConfigModule = {
       const goLiveToggle = document.getElementById('goLiveToggle');
       const goLiveStatus = document.getElementById('goLiveStatus');
 
+      const haEnable = document.getElementById('haEnable');
+      const haMqttBroker = document.getElementById('haMqttBroker');
+      const haMqttPort = document.getElementById('haMqttPort');
+      const haMqttUsername = document.getElementById('haMqttUsername');
+      const haMqttPassword = document.getElementById('haMqttPassword');
+      const haDiscoveryPrefix = document.getElementById('haDiscoveryPrefix');
+      const haDeviceName = document.getElementById('haDeviceName');
+      const haDeviceManufacturer = document.getElementById('haDeviceManufacturer');
+      const haDeviceModel = document.getElementById('haDeviceModel');
+      const haEnableStatus = document.getElementById('haEnableStatus');
+
       if (ssid) ssid.value = config.ssid ?? '';
       if (wifiPwd) wifiPwd.value = config.wifiPwd ?? '';
       if (apn) apn.value = config.apn ?? '';
@@ -282,10 +293,23 @@ const ConfigModule = {
           : 'Staging';
       }
 
+      if (haEnable) {
+          const isHaEnabled = Number(config.haEnable) === 1 || config.haEnable === true;
+          haEnable.checked = isHaEnabled;
+          if (haEnableStatus) haEnableStatus.textContent = isHaEnabled ? 'Enabled' : 'Disabled';
+      }
+      if (haMqttBroker) haMqttBroker.value = config.haMqttBroker ?? '';
+      if (haMqttPort) haMqttPort.value = config.haMqttPort ?? 1883;
+      if (haMqttUsername) haMqttUsername.value = config.haMqttUsername ?? '';
+      if (haMqttPassword) haMqttPassword.value = config.haMqttPassword ?? '';
+      if (haDiscoveryPrefix) haDiscoveryPrefix.value = config.haDiscoveryPrefix ?? 'homeassistant';
+      if (haDeviceName) haDeviceName.value = config.haDeviceName ?? '';
+      if (haDeviceManufacturer) haDeviceManufacturer.value = config.haDeviceManufacturer ?? '';
+      if (haDeviceModel) haDeviceModel.value = config.haDeviceModel ?? '';
+
       goLiveToggle.addEventListener('change', () => {
         const isLive = goLiveToggle.checked;
 
-        // 🔥 FIX: update disabled states dynamically
         stagingUrl.disabled = isLive;
         productionUrl.disabled = !isLive;
 
@@ -412,6 +436,15 @@ const ConfigModule = {
       updateGoLiveLabel();
     }
 
+    const haEnableInput = document.getElementById('haEnable');
+    const haEnableStatus = document.getElementById('haEnableStatus');
+    if (haEnableInput && haEnableStatus) {
+      const updateHaStatus = () => {
+        haEnableStatus.textContent = haEnableInput.checked ? 'Enabled' : 'Disabled';
+      };
+      haEnableInput.addEventListener('change', updateHaStatus);
+    }
+
     // final submit (collect all config-form fields)
     const saveHandler = async (e) => {
       e.preventDefault();
@@ -455,6 +488,9 @@ const ConfigModule = {
 
         allData.stagingUrl = (allData.stagingUrl || '').trim();
       }
+
+      allData.haEnable = allData.haEnable ? 1 : 0;
+      allData.haMqttPort = parseInt(allData.haMqttPort, 10) || 1883;
 
       console.log('Saving config', allData);
 
