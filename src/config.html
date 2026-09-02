@@ -188,11 +188,93 @@
           </fieldset>
         </form>
 
-        <!-- Step 3: Power & Environment Toggle -->
+        <!-- Step 3: Home Assistant MQTT Configuration -->
+        <form
+          id="haForm"
+          class="config-form step hidden"
+          data-step="2"
+          aria-hidden="true"
+        >
+          <fieldset>
+            <legend class="sensor-group__title">Home Assistant Settings</legend>
+
+            <div class="form-group power-switch">
+              <label class="toggle-switch">
+                <input type="checkbox" id="haEnable" name="haEnable" />
+                <span class="toggle-track"></span>
+                <span class="toggle-label"
+                  >Enable Home Assistant Integration:</span
+                >
+                <span id="haEnableStatus" class="status-text">Disabled</span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label for="haMqttBroker">MQTT Broker Host</label>
+              <input
+                type="text"
+                id="haMqttBroker"
+                name="haMqttBroker"
+                placeholder="192.168.1.50 or homeassistant.local"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="haMqttPort">MQTT Port</label>
+              <input
+                type="number"
+                id="haMqttPort"
+                name="haMqttPort"
+                placeholder="1883"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="haMqttUsername">MQTT Username</label>
+              <input type="text" id="haMqttUsername" name="haMqttUsername" />
+            </div>
+
+            <div class="form-group">
+              <label for="haMqttPassword">MQTT Password</label>
+              <div class="password-wrapper">
+                <input
+                  type="password"
+                  id="haMqttPassword"
+                  name="haMqttPassword"
+                />
+                <label class="show-password-label" for="toggle-haMqttPassword">
+                  <input
+                    type="checkbox"
+                    id="toggle-haMqttPassword"
+                    aria-label="Show MQTT password"
+                    title="Show password"
+                    class="toggle-password"
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="haDeviceName">Device Name</label>
+              <input type="text" id="haDeviceName" name="haDeviceName" />
+            </div>
+
+            <div class="step-btns">
+              <button type="button" class="btn prev-btn" data-prev="3">
+                Previous
+              </button>
+              <button id="submit" type="submit" class="btn btn--primary">
+                Save Config
+              </button>
+            </div>
+          </fieldset>
+        </form>
+
+        <!-- Step 4: Power & Environment Toggle -->
         <form
           id="powerForm"
           class="config-form step hidden"
-          data-step="2"
+          data-step="3"
           aria-hidden="true"
         >
           <fieldset>
@@ -226,7 +308,7 @@
         <form
           id="deploymentForm"
           class="config-form step hidden"
-          data-step="3"
+          data-step="4"
           aria-hidden="true"
         >
           <fieldset>
@@ -264,89 +346,12 @@
                 Previous
               </button>
 
-              <button type="button" class="btn btn--primary next-btn" data-next="4">
+              <button
+                type="button"
+                class="btn btn--primary next-btn"
+                data-next="4"
+              >
                 Next
-              </button>
-            </div>
-          </fieldset>
-        </form>
-
-        <!-- Step 5: Home Assistant MQTT Configuration -->
-        <form
-          id="haForm"
-          class="config-form step hidden"
-          data-step="4"
-          aria-hidden="true"
-        >
-          <fieldset>
-            <legend class="sensor-group__title">Home Assistant Settings</legend>
-
-            <div class="form-group power-switch">
-              <label class="toggle-switch">
-                <input type="checkbox" id="haEnable" name="haEnable" />
-                <span class="toggle-track"></span>
-                <span class="toggle-label">Enable Home Assistant Integration:</span>
-                <span id="haEnableStatus" class="status-text">Disabled</span>
-              </label>
-            </div>
-
-            <div class="form-group">
-              <label for="haMqttBroker">MQTT Broker Host</label>
-                <input type="text" id="haMqttBroker" name="haMqttBroker" placeholder="192.168.1.50 or homeassistant.local" />
-            </div>
-
-            <div class="form-group">
-              <label for="haMqttPort">MQTT Port</label>
-              <input type="number" id="haMqttPort" name="haMqttPort" placeholder="1883" />
-            </div>
-
-            <div class="form-group">
-              <label for="haMqttUsername">MQTT Username</label>
-              <input type="text" id="haMqttUsername" name="haMqttUsername" />
-            </div>
-
-            <div class="form-group">
-              <label for="haMqttPassword">MQTT Password</label>
-              <div class="password-wrapper">
-                <input type="password" id="haMqttPassword" name="haMqttPassword" />
-                <label class="show-password-label" for="toggle-haMqttPassword">
-                  <input
-                    type="checkbox"
-                    id="toggle-haMqttPassword"
-                    aria-label="Show MQTT password"
-                    title="Show password"
-                    class="toggle-password"
-                  />
-                </label>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="haDiscoveryPrefix">Discovery Prefix</label>
-              <input type="text" id="haDiscoveryPrefix" name="haDiscoveryPrefix" placeholder="homeassistant" />
-            </div>
-
-            <div class="form-group">
-              <label for="haDeviceName">Device Name</label>
-              <input type="text" id="haDeviceName" name="haDeviceName" />
-            </div>
-
-            <div class="form-group">
-              <label for="haDeviceManufacturer">Device Manufacturer</label>
-              <input type="text" id="haDeviceManufacturer" name="haDeviceManufacturer" />
-            </div>
-
-            <div class="form-group">
-              <label for="haDeviceModel">Device Model</label>
-              <input type="text" id="haDeviceModel" name="haDeviceModel" />
-            </div>
-
-            <div class="step-btns">
-              <button type="button" class="btn prev-btn" data-prev="3">
-                Previous
-              </button>
-              <button id="submit" type="submit" class="btn btn--primary">
-                Save Config
               </button>
             </div>
           </fieldset>
