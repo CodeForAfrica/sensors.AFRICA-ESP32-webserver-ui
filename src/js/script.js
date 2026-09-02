@@ -245,6 +245,7 @@ const ConfigModule = {
       const apn = document.getElementById('apn');
       const simPin = document.getElementById('simPin');
       const powerSaver = document.getElementById('powerSaver');
+      const powerSaverStatus = document.getElementById('powerSaverStatus');
       const stagingUrl = document.getElementById('stagingUrl');
       const productionUrl = document.getElementById('productionUrl');
       const goLiveToggle = document.getElementById('goLiveToggle');
@@ -264,9 +265,12 @@ const ConfigModule = {
       if (simPin) simPin.value = config.simPin ?? '';
 
       if (powerSaver) {
-        powerSaver.checked = !!config.powerSaver;
-        document.getElementById('powerSaverStatus').textContent =
-          config.powerSaver ? 'On' : 'Off';
+        // when config.powerSaver is string "on" or boolean true, treat as enabled
+        powerSaver.checked =
+          config.powerSaver === 'on' || config.powerSaver === true;
+        if (powerSaverStatus) {
+          powerSaverStatus.textContent = powerSaver.checked ? 'On' : 'Off';
+        }
       }
 
       if (stagingUrl) {
