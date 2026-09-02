@@ -1,4 +1,4 @@
-# sensors.AFRICA-ESP32-webserver-ui [View Demo](https://sensors-africa-esp32-webserver-ui.vercel.app)
+# sensors.AFRICA-ESP32-webserver-ui [View Demo](https://sensors-africa-esp-32-webserver-ui.vercel.app)
 
 Web server user interface development for ESP32 boards. This repository intends to separate core firmware development and web development that use distinct frameworks and build processes for a smoother development experience.
 
